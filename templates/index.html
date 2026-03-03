@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockPilot — Harbor Coffee Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0e1015;
+  --surface: #161920;
+  --surface-2: #1d2130;
+  --border: #252a3a;
+  --border-light: #1e2333;
+  --text: #e2e8f0;
+  --dim: #7c8aaa;
+  --dimmer: #4a5470;
+  --accent: #f59e0b;
+  --accent-dim: rgba(245,158,11,.12);
+  --ok: #10b981;
+  --ok-dim: rgba(16,185,129,.12);
+  --low: #f59e0b;
+  --low-dim: rgba(245,158,11,.12);
+  --out: #ef4444;
+  --out-dim: rgba(239,68,68,.12);
+  --cat-bev: #3b82f6;
+  --cat-pkg: #a78bfa;
+  --cat-sup: #34d399;
+  --cat-eqp: #fb923c;
+  --font: 'Inter', system-ui, sans-serif;
+  --radius: 10px;
+}
+body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+/* HEADER */
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.logo { font-size: 16px; font-weight: 800; letter-spacing: -.02em; color: var(--text); }
+.logo span { color: var(--accent); }
+.brand-tag {
+  font-size: 12px;
+  color: var(--dim);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+}
+.header-right { display: flex; align-items: center; gap: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-family: var(--font); font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { opacity: .9; }
+.btn-ghost { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--dimmer); }
+.btn-danger { background: var(--out-dim); color: var(--out); border: 1px solid rgba(239,68,68,.25); }
+.btn-danger:hover { background: rgba(239,68,68,.2); }
+
+/* STATS BAR */
+.stats-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.stat {
+  padding: 14px 20px;
+  border-right: 1px solid var(--border-light);
+  text-align: center;
+  min-width: 90px;
+}
+.stat:first-child { padding-left: 0; }
+.stat-num { font-size: 22px; font-weight: 800; letter-spacing: -.02em; display: block; }
+.stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+.stat-num.ok { color: var(--ok); }
+.stat-num.low { color: var(--low); }
+.stat-num.out { color: var(--out); }
+
+/* ALERT BANNER */
+.alert-banner {
+  background: var(--out-dim);
+  border-bottom: 1px solid rgba(239,68,68,.2);
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.alert-banner strong { color: var(--out); }
+.alert-filter-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(239,68,68,.3);
+  background: transparent;
+  color: var(--out);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.alert-filter-btn:hover { background: var(--out-dim); }
+
+/* CONTROLS */
+.controls {
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border-light);
+}
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--dim);
+  cursor: pointer;
+  transition: all .15s;
+}
+.tab:hover { color: var(--text); background: var(--surface-2); }
+.tab.active { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+.controls-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.status-pills { display: flex; gap: 4px; }
+.pill {
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dim);
+  cursor: pointer;
+  transition: all .15s;
+}
+.pill.active-ok  { background: var(--ok-dim);  color: var(--ok);  border-color: rgba(16,185,129,.25); }
+.pill.active-low { background: var(--low-dim); color: var(--low); border-color: rgba(245,158,11,.25); }
+.pill.active-out { background: var(--out-dim); color: var(--out); border-color: rgba(239,68,68,.25); }
+.pill.active-all { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+.search-wrap { position: relative; }
+#search {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px 7px 32px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  width: 200px;
+  outline: none;
+  transition: border-color .15s;
+}
+#search::placeholder { color: var(--dimmer); }
+#search:focus { border-color: var(--accent); }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--dimmer); pointer-events: none; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--dimmer);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--border-light); transition: background .1s; }
+tbody tr:hover { background: var(--surface-2); }
+tbody tr.status-out td:first-child { border-left: 2px solid var(--out); }
+tbody tr.status-low td:first-child { border-left: 2px solid var(--low); }
+td { padding: 11px 14px; vertical-align: middle; }
+.td-sku { font-size: 11px; font-weight: 600; color: var(--dimmer); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.td-name { font-weight: 600; color: var(--text); }
+
+/* Category badge */
+.cat-badge { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 600; }
+.cat-Beverages  { background: rgba(59,130,246,.12); color: #60a5fa; }
+.cat-Packaging  { background: rgba(167,139,250,.12); color: #a78bfa; }
+.cat-Supplies   { background: rgba(52,211,153,.12);  color: #34d399; }
+.cat-Equipment  { background: rgba(251,146,60,.12);  color: #fb923c; }
+
+/* Stock bar */
+.stock-cell { min-width: 140px; }
+.stock-bar-wrap { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+.stock-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+.fill-ok  { background: var(--ok); }
+.fill-low { background: var(--low); }
+.fill-out { background: var(--out); width: 0 !important; }
+.stock-numbers { font-size: 12px; color: var(--dim); }
+.stock-numbers .threshold { color: var(--dimmer); }
+
+/* Status badge */
+.status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.badge-ok  { background: var(--ok-dim);  color: var(--ok);  } .badge-ok::before  { background: var(--ok);  }
+.badge-low { background: var(--low-dim); color: var(--low); } .badge-low::before { background: var(--low); }
+.badge-out { background: var(--out-dim); color: var(--out); } .badge-out::before { background: var(--out); }
+
+.td-cost { font-size: 12px; color: var(--dim); white-space: nowrap; }
+.td-actions { white-space: nowrap; }
+
+/* Action buttons */
+.act-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .12s;
+  margin-right: 4px;
+}
+.act-in  { color: var(--ok);  } .act-in:hover  { background: var(--ok-dim);  border-color: rgba(16,185,129,.3); }
+.act-out { color: var(--out); } .act-out:hover { background: var(--out-dim); border-color: rgba(239,68,68,.3); }
+.act-log { color: var(--dim); } .act-log:hover { background: var(--surface-2); }
+
+/* Empty state */
+.empty-state { padding: 60px; text-align: center; color: var(--dimmer); font-size: 14px; }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  animation: modalIn .2s ease;
+}
+.modal-wide { width: 520px; }
+@keyframes modalIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.modal-title { font-size: 15px; font-weight: 700; }
+.close-btn { background: none; border: none; color: var(--dim); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px; }
+.close-btn:hover { color: var(--text); }
+.modal-item-name { font-size: 13px; font-weight: 600; color: var(--dim); margin-bottom: 16px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 11.5px; font-weight: 600; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .07em; }
+.form-group input, .form-group textarea {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: var(--font);
+  font-size: 13.5px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+.modal-actions .btn { flex: 1; justify-content: center; }
+
+/* History list */
+.history-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+.hist-type { font-weight: 700; min-width: 50px; }
+.hist-type.intake { color: var(--ok); }
+.hist-type.usage  { color: var(--out); }
+.hist-qty { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 36px; }
+.hist-note { color: var(--dim); flex: 1; }
+.hist-ts { color: var(--dimmer); font-size: 11px; white-space: nowrap; }
+
+/* AI summary */
+#ai-content { font-size: 13.5px; line-height: 1.7; color: var(--text); }
+#ai-content strong { font-weight: 700; }
+#ai-content li { margin-left: 16px; margin-bottom: 4px; }
+.ai-loading { color: var(--dim); display: flex; align-items: center; gap: 8px; }
+.ai-demo-note { font-size: 11.5px; color: var(--dimmer); margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+/* Spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+
+/* Demo notice */
+.demo-notice {
+  background: var(--accent-dim);
+  border-bottom: 1px solid rgba(245,158,11,.2);
+  padding: 8px 28px;
+  font-size: 12px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.demo-notice a { color: var(--accent); font-weight: 600; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .controls { padding: 10px 14px; }
+  .stats-bar { padding: 0 14px; }
+  .app-header { padding: 0 14px; }
+  .table-wrap td, .table-wrap th { padding: 9px 10px; }
+  .brand-tag { display: none; }
+  #search { width: 140px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-left">
+    <div class="logo">Stock<span>Pilot</span></div>
+    <div class="brand-tag">Harbor Coffee Co. — Supply Room</div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-primary" onclick="openAiSummary()">AI Summary</button>
+    <button class="btn btn-ghost" onclick="confirmReset()">Reset Demo</button>
+  </div>
+</div>
+
+{% if not config.ANTHROPIC_API_KEY %}
+<div class="demo-notice">
+  <span>Demo mode — AI summary uses pre-generated output.</span>
+  <a href="https://iswain.dev" target="_blank">iswain.dev</a>
+</div>
+{% endif %}
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-num" id="stat-total">{{ stats.total }}</span>
+    <span class="stat-label">Items</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num ok" id="stat-ok">{{ stats.ok }}</span>
+    <span class="stat-label">Stocked OK</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num low" id="stat-low">{{ stats.low }}</span>
+    <span class="stat-label">Low Stock</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num out" id="stat-out">{{ stats.out }}</span>
+    <span class="stat-label">Out of Stock</span>
+  </div>
+</div>
+
+<!-- ALERT BANNER -->
+<div class="alert-banner" id="alert-banner" style="{{ '' if stats.alerts > 0 else 'display:none' }}">
+  <span>⚠</span>
+  <strong id="alert-text">{{ stats.alerts }} item{{ 's' if stats.alerts != 1 else '' }} need attention</strong>
+  <span id="alert-detail" style="color:var(--dim)">— {{ stats.out }} out of stock, {{ stats.low }} low stock</span>
+  <button class="alert-filter-btn" onclick="filterAlerts()">View Alerts</button>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="tabs" id="cat-tabs">
+    <button class="tab active" data-cat="all" onclick="setCategory(this)">All</button>
+    {% for cat in categories %}
+    <button class="tab" data-cat="{{ cat }}" onclick="setCategory(this)">{{ cat }}</button>
+    {% endfor %}
+  </div>
+  <div class="controls-right">
+    <div class="status-pills">
+      <button class="pill active-all" data-status="all" onclick="setStatus(this)">All</button>
+      <button class="pill" data-status="ok" onclick="setStatus(this)">OK</button>
+      <button class="pill" data-status="low" onclick="setStatus(this)">Low</button>
+      <button class="pill" data-status="out" onclick="setStatus(this)">Out</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search items…" oninput="setSearch(this.value)">
+    </div>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:80px">SKU</th>
+        <th>Item</th>
+        <th>Category</th>
+        <th style="width:160px">Stock Level</th>
+        <th>Status</th>
+        <th>Unit Cost</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="inventory-tbody"></tbody>
+  </table>
+  <div class="empty-state" id="empty-state" style="display:none">No items match your filters.</div>
+</div>
+
+<!-- INTAKE MODAL -->
+<div class="modal-overlay" id="intake-overlay" onclick="overlayClose(event,'intake-overlay')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">+ Record Intake</span>
+      <button class="close-btn" onclick="closeModal('intake-overlay')">×</button>
+    </div>
+    <div class="modal-item-name" id="intake-item-name"></div>
+    <input type="hidden" id="intake-item-id">
+    <div class="form-group">
+      <label>Quantity received</label>
+      <input type="number" id="intake-qty" min="1" value="1">
+    </div>
+    <div class="form-group">
+      <label>Note (optional)</label>
+      <input type="text" id="intake-note" placeholder="e.g. Weekly delivery from supplier">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="submitIntake()">Record Intake</button>
+      <button class="btn btn-ghost" onclick="closeModal('intake-overlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- USAGE MODAL -->
+<div class="modal-overlay" id="usage-overlay" onclick="overlayClose(event,'usage-overlay')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">− Record Usage</span>
+      <button class="close-btn" onclick="closeModal('usage-overlay')">×</button>
+    </div>
+    <div class="modal-item-name" id="usage-item-name"></div>
+    <input type="hidden" id="usage-item-id">
+    <div class="form-group">
+      <label>Quantity used</label>
+      <input type="number" id="usage-qty" min="1" value="1">
+    </div>
+    <div class="form-group">
+      <label>Note (optional)</label>
+      <input type="text" id="usage-note" placeholder="e.g. Morning service">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="submitUsage()">Record Usage</button>
+      <button class="btn btn-ghost" onclick="closeModal('usage-overlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-overlay" id="history-overlay" onclick="overlayClose(event,'history-overlay')">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <span class="modal-title">Transaction History</span>
+      <button class="close-btn" onclick="closeModal('history-overlay')">×</button>
+    </div>
+    <div class="modal-item-name" id="history-item-name"></div>
+    <div class="history-list" id="history-list"></div>
+  </div>
+</div>
+
+<!-- AI SUMMARY MODAL -->
+<div class="modal-overlay" id="ai-overlay" onclick="overlayClose(event,'ai-overlay')">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <span class="modal-title">AI Weekly Summary</span>
+      <button class="close-btn" onclick="closeModal('ai-overlay')">×</button>
+    </div>
+    <div id="ai-content"><div class="ai-loading"><div class="spinner"></div> Generating summary…</div></div>
+  </div>
+</div>
+
+<script>
+const state = {
+  items: {{ items | tojson }},
+  category: 'all',
+  status: 'all',
+  search: ''
+};
+
+function getStatus(qty, threshold) {
+  if (qty <= 0) return 'out';
+  if (qty <= threshold) return 'low';
+  return 'ok';
+}
+
+function fillPct(qty, threshold) {
+  return Math.min(100, Math.round((qty / Math.max(1, threshold * 2)) * 100));
+}
+
+function rowHTML(item) {
+  const status = getStatus(item.quantity, item.reorder_threshold);
+  const fill = fillPct(item.quantity, item.reorder_threshold);
+  const safeName = item.name.replace(/'/g, "\\'");
+  return `
+    <tr class="status-${status}" data-id="${item.id}">
+      <td class="td-sku">${item.sku}</td>
+      <td class="td-name">${item.name}</td>
+      <td><span class="cat-badge cat-${item.category}">${item.category}</span></td>
+      <td class="stock-cell">
+        <div class="stock-bar-wrap">
+          <div class="stock-bar-fill fill-${status}" style="width:${fill}%"></div>
+        </div>
+        <span class="stock-numbers">${item.quantity} <span class="threshold">/ ${item.reorder_threshold} reorder</span></span>
+      </td>
+      <td><span class="status-badge badge-${status}">${status.toUpperCase()}</span></td>
+      <td class="td-cost">$${item.unit_cost.toFixed(2)} / ${item.unit}</td>
+      <td class="td-actions">
+        <button class="act-btn act-in" onclick="openIntake(${item.id},'${safeName}')">+ In</button>
+        <button class="act-btn act-out" onclick="openUsage(${item.id},'${safeName}')">− Out</button>
+        <button class="act-btn act-log" onclick="openHistory(${item.id},'${safeName}')">Log</button>
+      </td>
+    </tr>`;
+}
+
+function renderTable() {
+  let items = state.items;
+  if (state.category !== 'all') items = items.filter(i => i.category === state.category);
+  if (state.status !== 'all') items = items.filter(i => getStatus(i.quantity, i.reorder_threshold) === state.status);
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    items = items.filter(i => i.name.toLowerCase().includes(q) || i.sku.toLowerCase().includes(q));
+  }
+  const tbody = document.getElementById('inventory-tbody');
+  const empty = document.getElementById('empty-state');
+  if (!items.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = items.map(rowHTML).join('');
+}
+
+function updateStats() {
+  const counts = {ok:0, low:0, out:0};
+  state.items.forEach(i => counts[getStatus(i.quantity, i.reorder_threshold)]++);
+  document.getElementById('stat-total').textContent = state.items.length;
+  document.getElementById('stat-ok').textContent = counts.ok;
+  document.getElementById('stat-low').textContent = counts.low;
+  document.getElementById('stat-out').textContent = counts.out;
+  const alerts = counts.low + counts.out;
+  const banner = document.getElementById('alert-banner');
+  if (alerts > 0) {
+    banner.style.display = 'flex';
+    document.getElementById('alert-text').textContent = `${alerts} item${alerts!==1?'s':''} need attention`;
+    document.getElementById('alert-detail').textContent = `— ${counts.out} out of stock, ${counts.low} low stock`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function setCategory(btn) {
+  document.querySelectorAll('#cat-tabs .tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.category = btn.dataset.cat;
+  renderTable();
+}
+
+function setStatus(btn) {
+  document.querySelectorAll('.status-pills .pill').forEach(b => {
+    b.className = 'pill';
+  });
+  const s = btn.dataset.status;
+  btn.className = `pill active-${s}`;
+  state.status = s;
+  renderTable();
+}
+
+function setSearch(val) { state.search = val; renderTable(); }
+
+function filterAlerts() {
+  document.querySelectorAll('.status-pills .pill').forEach(b => b.className = 'pill');
+  const outBtn = document.querySelector('.pill[data-status="out"]');
+  outBtn.className = 'pill active-out';
+  state.status = 'out';
+  renderTable();
+}
+
+// Modals
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function overlayClose(e, id) { if (e.target.id === id) closeModal(id); }
+
+function openIntake(id, name) {
+  document.getElementById('intake-item-id').value = id;
+  document.getElementById('intake-item-name').textContent = name;
+  document.getElementById('intake-qty').value = 1;
+  document.getElementById('intake-note').value = '';
+  document.getElementById('intake-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('intake-qty').focus(), 80);
+}
+
+async function submitIntake() {
+  const id = document.getElementById('intake-item-id').value;
+  const qty = parseInt(document.getElementById('intake-qty').value);
+  const note = document.getElementById('intake-note').value || 'Intake';
+  if (!qty || qty < 1) return;
+  const resp = await fetch(`/api/items/${id}/intake`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({quantity: qty, note})
+  });
+  if (resp.ok) {
+    const updated = await resp.json();
+    const idx = state.items.findIndex(i => i.id === updated.id);
+    if (idx >= 0) state.items[idx] = updated;
+    renderTable(); updateStats();
+    closeModal('intake-overlay');
+  }
+}
+
+function openUsage(id, name) {
+  document.getElementById('usage-item-id').value = id;
+  document.getElementById('usage-item-name').textContent = name;
+  document.getElementById('usage-qty').value = 1;
+  document.getElementById('usage-note').value = '';
+  document.getElementById('usage-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('usage-qty').focus(), 80);
+}
+
+async function submitUsage() {
+  const id = document.getElementById('usage-item-id').value;
+  const qty = parseInt(document.getElementById('usage-qty').value);
+  const note = document.getElementById('usage-note').value || 'Usage';
+  if (!qty || qty < 1) return;
+  const resp = await fetch(`/api/items/${id}/usage`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({quantity: qty, note})
+  });
+  if (resp.ok) {
+    const updated = await resp.json();
+    const idx = state.items.findIndex(i => i.id === updated.id);
+    if (idx >= 0) state.items[idx] = updated;
+    renderTable(); updateStats();
+    closeModal('usage-overlay');
+  }
+}
+
+async function openHistory(id, name) {
+  document.getElementById('history-item-name').textContent = name;
+  document.getElementById('history-list').innerHTML = '<div class="ai-loading"><div class="spinner"></div> Loading…</div>';
+  document.getElementById('history-overlay').classList.add('show');
+  const resp = await fetch(`/api/items/${id}/history`);
+  const txns = await resp.json();
+  const list = document.getElementById('history-list');
+  if (!txns.length) { list.innerHTML = '<div style="color:var(--dimmer);padding:16px;text-align:center">No transactions yet.</div>'; return; }
+  list.innerHTML = txns.map(t => `
+    <div class="history-item">
+      <span class="hist-type ${t.type}">${t.type}</span>
+      <span class="hist-qty" style="color:${t.quantity>0?'var(--ok)':'var(--out)'}">${t.quantity>0?'+':''}${t.quantity}</span>
+      <span class="hist-note">${t.note}</span>
+      <span class="hist-ts">${t.ts}</span>
+    </div>`).join('');
+}
+
+async function openAiSummary() {
+  document.getElementById('ai-content').innerHTML = '<div class="ai-loading"><div class="spinner"></div> Generating weekly summary…</div>';
+  document.getElementById('ai-overlay').classList.add('show');
+  const resp = await fetch('/api/ai-summary');
+  const data = await resp.json();
+  const html = renderMd(data.summary) + (data.demo ? '<div class="ai-demo-note">Demo output — add ANTHROPIC_API_KEY to generate live summaries.</div>' : '');
+  document.getElementById('ai-content').innerHTML = html;
+}
+
+function renderMd(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul style="margin:8px 0 8px 16px;display:flex;flex-direction:column;gap:3px">$1</ul>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+async function confirmReset() {
+  if (!confirm('Reset all inventory data to demo defaults?')) return;
+  const resp = await fetch('/api/reset', {method: 'POST'});
+  if (resp.ok) {
+    const r2 = await fetch('/api/items');
+    state.items = await r2.json();
+    state.category = 'all';
+    state.status = 'all';
+    state.search = '';
+    document.getElementById('search').value = '';
+    document.querySelectorAll('#cat-tabs .tab').forEach((b,i) => b.classList.toggle('active', i===0));
+    document.querySelectorAll('.status-pills .pill').forEach((b,i) => b.className = i===0 ? 'pill active-all' : 'pill');
+    renderTable(); updateStats();
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show')); });
+document.getElementById('intake-note').addEventListener('keydown', e => { if (e.key === 'Enter') submitIntake(); });
+document.getElementById('usage-note').addEventListener('keydown', e => { if (e.key === 'Enter') submitUsage(); });
+
+renderTable();
+</script>
+</body>
+</html>
