@@ -1,5 +1,8 @@
 # Project 5: Ops & Inventory Automation
 
+## Live Demo
+**[stockpilot-inni.onrender.com](https://stockpilot-inni.onrender.com)**
+
 ## Service Demonstrated
 **Operations & Inventory Automation** — clients (retail, hospitality, small
 manufacturers) get a custom system replacing manual spreadsheet inventory tracking
